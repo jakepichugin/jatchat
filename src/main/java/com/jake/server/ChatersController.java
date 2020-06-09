@@ -52,6 +52,11 @@ public class ChatersController {
 			@RequestParam("roomID") String rid, 
 			@RequestParam("createRoom") boolean newRoom) {
 		
+		File chatRoomDir = new File(CHATROOM_DIR);
+		if (!chatRoomDir.exists()) {
+			chatRoomDir.mkdirs();
+		}
+		
 		File roomFile = new File(CHATROOM_DIR + rid + ".txt");
 		if (!roomFile.exists() && !newRoom) {
 			return "<h1 style='color:red;'>The room '" + rid + "' not found</h1>" + getJoinPage();
