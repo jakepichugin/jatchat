@@ -17,6 +17,7 @@ function sendMessage() {
 		'message' : message,
 		"username": name
 	}));
+	document.getElementById("message").value = "";  //cleaning up the input field
 }
 
 function scrollMsgToBottom() {
@@ -61,7 +62,6 @@ function showGreeting(messageObj) {
 	console.log(messageObj);
 	$("#msgContainer").append("<p><span style='font-weight:bold; width: 100px'>" + messageObj.username + "</span>: " + messageObj.message + "</p>");
 	scrollMsgToBottom();
-	document.getElementById("message").value = "";
 	//$("#greetings").append("<tr><td>" + message + "</td></tr>");
 }
 
