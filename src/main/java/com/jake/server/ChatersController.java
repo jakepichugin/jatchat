@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -17,11 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jake.server.chat.ChatMessage;
+import com.jake.server.chat.ChatMessageService;
 
 @Controller
 public class ChatersController {
 	
 	private static String CHATROOM_DIR = "chatrooms/";
+	
+	@Autowired
+	private ChatMessageService chatMessageService;
 	
 	@RequestMapping(value = "/join", method = RequestMethod.GET)
 	@ResponseBody
@@ -88,8 +94,8 @@ public class ChatersController {
 				"<h1>" + name + ", welcome to Chat room " + rid + "</h1>" +
 				"	<div style='max-height: 300px;overflow-y: scroll;' id='msgContainer'>REPLACEME</div>\n" +
 				"	<input type='text' id='message'/> <button onclick='sendMessage()'>Send</button>\n" + 
-				"   <input type='hidden' id='roomId' value=" + rid+ "/>" + 
-				"   <input type='hidden' id='name' value=" + name+ "/>" + 
+				"   <input type='hidden' id='roomId' value='" + rid+ "'/>" + 
+				"   <input type='hidden' id='name' value='" + name+ "'/>" + 
 				"	<script type='text/javascript' src='chat-room.js'></script>\n" + 
 				"</body>\n" + 
 				"</html>\n";
@@ -117,27 +123,34 @@ public class ChatersController {
 	@ResponseBody
 	public String getMessages(
 			@PathVariable("roomId") String rid) {
-		
-		try (BufferedInputStream buff = new BufferedInputStream( new FileInputStream(CHATROOM_DIR + rid + ".txt"))) {
 
-			return new String(buff.readAllBytes());
-		} catch (IOException ioe) {
-			System.out.println("Could not write into the file: " + ioe.getMessage());
+		List<ChatMessage> messages = chatMessageService.getAllMessages(rid);
+		String result = "";
+		for (ChatMessage m : messages) {
+			result += "<p><span style='font-weight:bold; width: 100px'>" + m.getUsername() + "</span>: " + m.getMessage() + "</p>\n";
 		}
-		return "Sorry did not find the room";
+		return result;
+//		try (BufferedInputStream buff = new BufferedInputStream( new FileInputStream(CHATROOM_DIR + rid + ".txt"))) {
+//
+//			return new String(buff.readAllBytes());
+//		} catch (IOException ioe) {
+//			System.out.println("Could not write into the file: " + ioe.getMessage());
+//		}
+//		return "Sorry did not find the room";
 	}
 	
 	
 	@MessageMapping("/rooms/{roomId}/messages") // /hello
 	@SendTo("/topic/rooms/{roomId}/messages") // /topic/greetings
-	public ChatMessage greeting(@DestinationVariable("roomId") String rid, ChatMessage message) throws Exception {
-		
-		try (FileOutputStream myFile = new FileOutputStream(CHATROOM_DIR + rid + ".txt", true)) {
-
-			myFile.write(("<p><span style='font-weight:bold; width: 100px'>" + message.getUsername() + "</span>: " + message.getMessage() + "</p>\n").getBytes());
-		} catch (IOException ioe) {
-			System.out.println("Could not write into the file: " + ioe.getMessage());
-		}
+	public ChatMessage addMessage(@DestinationVariable("roomId") String roomId, ChatMessage message) throws Exception {
+		message.setRoomId(roomId);
+		chatMessageService.save(message);
+//		try (FileOutputStream myFile = new FileOutputStream(CHATROOM_DIR + rid + ".txt", true)) {
+//
+//			myFile.write(("<p><span style='font-weight:bold; width: 100px'>" + message.getUsername() + "</span>: " + message.getMessage() + "</p>\n").getBytes());
+//		} catch (IOException ioe) {
+//			System.out.println("Could not write into the file: " + ioe.getMessage());
+//		}
 		return message;
 	}
 	
