@@ -1,9 +1,11 @@
 package com.jake.server.chat.user;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
 
 @Entity(name = "jcuser")
 public class User {
@@ -11,11 +13,16 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-
+	
+	@Column(unique=true)
 	private String username;
+	
+	@NotEmpty
 	private String password;
+	
 	private String key;
 
+	
 	public Long getId() {
 		return id;
 	}

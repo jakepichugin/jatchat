@@ -10,7 +10,7 @@ function checkForUser() {
 	const user = jcGetUserFromLocalStorage();
 	console.log("LOCATION: ", window.location);
 	if (!user) {
-		if (window.location.pathname !== "/login.html") {
+		if (window.location.pathname !== "/login.html" && window.location.pathname !== "/signup.html") {
 			window.location.href = "/login.html";
 		}
 	} else if (window.location.pathname === "/" || window.location.pathname === "/index.html") {
@@ -48,3 +48,20 @@ function login(event) {
 	return false;
 }
 
+function signup(event) {
+	event.preventDefault();
+	
+	const username = $("#username").val();
+	const password = $("#password").val();
+	
+	jQuery.post("/signup", { username: username, password: password } ).done(function( user ) {
+		if (user && user.id && user.key) {
+			jcSaveUserInLocalStorage(user);
+			window.location.href = "/home.html";
+		} else {
+			alert("Signup failed!" + user);
+			console.log("signup failed: ", user);
+		}
+	});
+	return false;
+}
