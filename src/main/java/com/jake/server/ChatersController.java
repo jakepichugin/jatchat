@@ -34,7 +34,7 @@ public class ChatersController {
 	public String getJoinPage() {
 		return "<h1>Chatter</h1>" + "<div style='border-top: 1px solid #eee; padding-top: 20px;'>"
 				+ "<h2>Join a chat room</h2>"
-				+ "<form action='/rooms' method='POST'>"
+				+ "<form action='/rooms-old' method='POST'>"
 				+ "Enter name: <input name='name'/><br/>"
 				+ "Enter roomID: <input name='roomID'/><br/>"
 				+ "<input type='hidden' name='createRoom' value='false'/><br/>"
@@ -42,7 +42,7 @@ public class ChatersController {
 				+ "</form>" 
 				+ "<hr/>"
 				+ "<h2>Create a chat room</h2>"
-				+ "<form action='/rooms' method='POST'>"
+				+ "<form action='/rooms-old' method='POST'>"
 				+ "Enter name: <input name='name'/><br/>"
 				+ "Enter roomID: <input name='roomID'/><br/>"
 				+ "<input type='hidden' name='createRoom' value='true'/><br/>"
@@ -51,7 +51,7 @@ public class ChatersController {
 				+ "</div>";
 	}
 
-	@RequestMapping(value = "/rooms", method = RequestMethod.POST)
+	@RequestMapping(value = "/rooms-old", method = RequestMethod.POST)
 	@ResponseBody
 	public String enterRoom(
 			@RequestParam("name") String name,
@@ -102,7 +102,7 @@ public class ChatersController {
 	}
 	
 /*
-	@RequestMapping(value = "/rooms/{roomId}/messages", method = RequestMethod.POST)
+	@RequestMapping(value = "/rooms-old/{roomId}/messages", method = RequestMethod.POST)
 	@ResponseBody
 	public String addMessage(
 			@PathVariable("roomId") String rid,
@@ -119,7 +119,7 @@ public class ChatersController {
 	}
 */	
 	
-	@RequestMapping(value = "/rooms/{roomId}/messages", method = RequestMethod.GET)
+	@RequestMapping(value = "/rooms-old/{roomId}/messages", method = RequestMethod.GET)
 	@ResponseBody
 	public String getMessages(
 			@PathVariable("roomId") String rid) {
@@ -140,8 +140,8 @@ public class ChatersController {
 	}
 	
 	
-	@MessageMapping("/rooms/{roomId}/messages") // /hello
-	@SendTo("/topic/rooms/{roomId}/messages") // /topic/greetings
+	@MessageMapping("/rooms-old/{roomId}/messages") // /hello
+	@SendTo("/topic/rooms-old/{roomId}/messages") // /topic/greetings
 	public ChatMessage addMessage(@DestinationVariable("roomId") String roomId, ChatMessage message) throws Exception {
 		message.setRoomId(roomId);
 		chatMessageService.save(message);

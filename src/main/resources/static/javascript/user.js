@@ -30,6 +30,7 @@ function jcGetUserFromLocalStorage() {
 
 checkForUser();
 
+
 function login(event) {
 	event.preventDefault();
 	

@@ -9,12 +9,106 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 
+<script src="/webjars/sockjs-client/sockjs.min.js"></script> 
+<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+
 <script type="text/javascript" src="javascript/user.js"></script>
+<script type="text/javascript" src="javascript/chat-room.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
 <body>
 	<div class="container">
-		HOME
+		<h2>Chat Rooms:</h2>
+		
+		<div id="roomList">
+			<input v-model="roomName" type="text"/>
+			<button @click="addRoom(roomName)">Create chat</button>
+			<ul>
+				<li v-for="room in rooms">
+				<a href="#" @click="openRoom(room)">{{ room.name }}</a>
+				</li>
+			</ul>
+		</div>
+
+		<h2>Messages:</h2>
+
+		<div id="room">
+			<p v-for="message in messages">
+				<span style='font-weight:bold; width: 100px'> {{ message.username }} </span>: {{ message.message }}
+			</p>
+		
+			<input type='text' v-model='message' v-on:keydown="onKeyDown"/> <button onclick='sendMessage()'>Send</button> 
+			<input type='hidden' v-model='currentRoomId' value=""/> 
+		</div>
+		
 	</div>
+	
+	<script>
+	//const axios = require('axios');
+	
+	var roomComponent = new Vue({
+		el: '#room',
+		data: {
+			messages: [],
+			currentRoomId: "",
+			message: ""
+		},
+		created () {
+			console.log(this.rooms);
+		}, 
+		methods: {
+			openRoom(roomId) {
+				this.currentRoomId = roomId;
+				console.log("Going to connect to the room: " + roomId);
+				
+				axios.get('/rooms/' + roomId + '/messages')
+					.then(result => this.messages = result.data);
+				
+				connect(roomId, (messageObj) => {
+					console.log("Received message: ", messageObj);
+					this.messages.push(messageObj);
+				});
+			},
+			onKeyDown(event) {
+				if (event.keyCode === 13) {
+					sendMessage(this.message, this.currentRoomId, jcGetUserFromLocalStorage().username);
+				}
+			}
+ 		}
+	});
+	
+	
+	
+	var roomListComponent = new Vue({
+		el: '#roomList',
+		data: {
+			rooms: [],
+			roomName: ""
+		},
+		async created () {
+			this.loadRooms();
+			console.log(this.rooms);
+		}, 
+		methods: {
+			loadRooms() {
+				axios.get('/rooms')
+					.then(result => this.rooms = result.data);
+			},
+			
+			addRoom(roomName) {
+				axios.post('/rooms', {"name": roomName})
+					.then((r) => this.loadRooms());
+			},
+			
+			openRoom(room) {
+				alert(room.id);
+				roomComponent.openRoom(room.id);
+			}
+		}
+	});
+	</script>
 </body>
 </html>
