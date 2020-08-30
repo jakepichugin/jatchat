@@ -13,6 +13,7 @@ function sendMessage( message, roomId, name) {
 	stompClient.send("/app/rooms/" + roomId + "/messages", {}, JSON.stringify({
 		'message' : message,
 		"username": name
+		
 	}));
 	//document.getElementById("message").value = "";  //cleaning up the input field
 }

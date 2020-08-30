@@ -1,12 +1,12 @@
-package com.jake.server.chat;
+package com.jake.server.chat.message;
 
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface ChatMessageRepository extends CrudRepository<ChatMessage, Long> {
+public interface MessageRepository extends CrudRepository<Message, Long> {
 
-	List<ChatMessage> findByRoomId(String roomId);
+	List<Message> findByRoomId(String roomId);
 
 	// select * from chatmessage WHERE username = 'asdf'
 //	List<ChatMessage> findByUsername(String username);

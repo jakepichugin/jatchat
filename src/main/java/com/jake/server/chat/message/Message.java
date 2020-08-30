@@ -1,4 +1,4 @@
-package com.jake.server.chat;
+package com.jake.server.chat.message;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -6,21 +6,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class ChatMessage {
+public class Message {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
 	private String message;
-	private String username;
+	private String userId;
 	private String roomId;
 	
-	public ChatMessage() {}
+	public Message() {}
 	
-	public ChatMessage(String username, String message) {
+	public Message(String userId, String message) {
 		this.message = message;
-		this.username = username;
+		this.userId = userId;
 	}
 	
 	public String getMessage() {
@@ -32,12 +32,12 @@ public class ChatMessage {
 	}
 
 	
-	public String getUsername() {
-		return username;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getRoomId() {
